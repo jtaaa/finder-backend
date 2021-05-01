@@ -6,7 +6,7 @@ export class NewUserInput {
   email!: string;
 
   @GraphQLField()
-  username!: string;
+  userName!: string;
 
   @GraphQLField()
   phoneNumber!: string;

@@ -6,7 +6,7 @@ import { buildContext } from 'graphql-passport';
 
 import { User } from 'models/User';
 import { AuthenticationContext } from 'modules/Passport';
-import createSchema from './Schema';
+import createSchema from './schema';
 
 type Credentials = { email: string; password?: string };
 export interface Context

@@ -16,7 +16,7 @@ export class User {
 
   @GraphQLField()
   @DBProperty({ required: true, trim: true, unique: true, index: true })
-  username!: string;
+  userName!: string;
 
   @GraphQLField()
   @DBProperty({ required: true, trim: true })
@@ -50,6 +50,16 @@ export class User {
 
     const user = await UserModel.create(userInput);
     return user;
+  }
+
+  static async search(query: string) {
+    const USERNAME_SEARCH_RESULTS_LIMIT = 10;
+
+    const usernameResults = await UserModel.find({
+      userName: new RegExp(`${query}.*`),
+    }).limit(USERNAME_SEARCH_RESULTS_LIMIT);
+
+    return usernameResults;
   }
 }
 

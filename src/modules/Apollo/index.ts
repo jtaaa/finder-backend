@@ -1,1 +1,1 @@
-export * from './Apollo';
+export * from './apollo';
