@@ -1,10 +1,8 @@
-import { ObjectId } from 'mongodb';
 import { Resolver, Query, Ctx, Mutation, Arg } from 'type-graphql';
 
 import { AuthenticationContext } from 'modules/Passport';
 import { Context } from 'modules/Apollo';
 import { User } from 'models/User';
-import { ApproveConnectionReturn, Connection } from 'models/Connection';
 
 @Resolver((_of) => User)
 export class UserResolver {
@@ -33,23 +31,5 @@ export class UserResolver {
     });
     await context.login(user);
     return user;
-  }
-
-  @Mutation((_returns) => Connection)
-  async requestConnection(
-    @Ctx('user') user: User,
-    @Arg('to') to: ObjectId,
-  ): Promise<Connection> {
-    const connection = await Connection.requestConnection(user._id, to);
-    return connection;
-  }
-
-  @Mutation((_returns) => ApproveConnectionReturn)
-  async approveConnection(
-    @Ctx('user') user: User,
-    @Arg('connectionId') connectionId: ObjectId,
-  ): Promise<ApproveConnectionReturn> {
-    const connection = await Connection.approveConnection(connectionId, user);
-    return connection;
   }
 }

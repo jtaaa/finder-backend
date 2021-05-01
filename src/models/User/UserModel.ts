@@ -3,10 +3,11 @@ import { ObjectType, Field as GraphQLField } from 'type-graphql';
 import { UserInputError } from 'apollo-server-errors';
 import { prop as DBProperty, getModelForClass } from '@typegoose/typegoose';
 
+import { DBSchema } from 'modules/Mongoose';
 import { NewUserInput } from './inputs';
 
 @ObjectType()
-export class User {
+export class User extends DBSchema {
   @GraphQLField()
   readonly _id!: ObjectId;
 
@@ -49,7 +50,7 @@ export class User {
     }
 
     const user = await UserModel.create(userInput);
-    return user;
+    return user.toObject();
   }
 
   static async search(query: string) {
@@ -57,7 +58,9 @@ export class User {
 
     const usernameResults = await UserModel.find({
       userName: new RegExp(`${query}.*`),
-    }).limit(USERNAME_SEARCH_RESULTS_LIMIT);
+    })
+      .limit(USERNAME_SEARCH_RESULTS_LIMIT)
+      .lean();
 
     return usernameResults;
   }

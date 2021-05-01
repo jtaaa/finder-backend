@@ -19,9 +19,11 @@ export class Connection extends DBSchema {
   @DBProperty({ ref: User, required: true })
   to!: ObjectId;
 
+  @GraphQLField()
   @DBProperty({ required: true })
   approved!: boolean;
 
+  @GraphQLField((_type) => Visibility)
   @DBProperty({ enum: Visibility, required: true })
   visibility!: Visibility;
 
@@ -31,12 +33,14 @@ export class Connection extends DBSchema {
     owner: ObjectId,
     to: ObjectId,
   ): Promise<Connection> {
-    return ConnectionModel.create({
+    const connection = new ConnectionModel({
       owner,
       to,
       approved: false,
       visibility: Visibility.VisibleWhenMoving,
     });
+    await connection.save();
+    return connection.toObject();
   }
 
   static async approveConnection(
@@ -44,7 +48,7 @@ export class Connection extends DBSchema {
     user: User,
   ): Promise<ApproveConnectionReturn> {
     const connection = await ConnectionModel.getFromUserInputId(connectionId);
-    if (connection.to !== user._id) {
+    if (!connection.to.equals(user._id)) {
       throw new AuthenticationError(
         'User does not own the specified connection.',
       );
@@ -60,7 +64,10 @@ export class Connection extends DBSchema {
       visibility: Visibility.NotVisible,
     });
 
-    return { connection, reverseConnection };
+    return {
+      connection: connection.toObject(),
+      reverseConnection: reverseConnection.toObject(),
+    };
   }
 }
 
