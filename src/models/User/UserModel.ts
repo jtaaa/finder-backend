@@ -15,6 +15,14 @@ export class User {
   email!: string;
 
   @GraphQLField()
+  @DBProperty({ required: true, trim: true, unique: true, index: true })
+  username!: string;
+
+  @GraphQLField()
+  @DBProperty({ required: true, trim: true })
+  phoneNumber!: string;
+
+  @GraphQLField()
   @DBProperty({ required: true, trim: true })
   firstName!: string;
 

@@ -1,4 +1,4 @@
-import type { GetAuthProviderVerifyFn } from './types';
+import type { AuthenticationContext, GetAuthProviderVerifyFn } from './types';
 
 import createHttpError from 'http-errors';
 import { UserModel } from 'models/User';
@@ -32,16 +32,14 @@ const getAuthProviderVerifyFn: GetAuthProviderVerifyFn = (
   }
 
   // Create signup data based on the profile returned from Google or FB
-  const sharedSignUpData = {
+  const authContext: AuthenticationContext = {
     firstName: profile.name.givenName,
     lastName: profile.name.familyName,
     email: profile.emails[0].value,
     [idField]: profile.id,
   };
 
-  // Create the new user
-  const newUser = await UserModel.signUp(sharedSignUpData);
-  return done(null, newUser);
+  return done(null, authContext);
 };
 
 export default getAuthProviderVerifyFn;
