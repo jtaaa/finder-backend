@@ -38,7 +38,10 @@ export class ConnectionResolver {
     @Ctx('user') user: User,
     @Arg('connectionId') connectionId: ObjectId,
   ): Promise<ApproveConnectionReturn> {
-    const connection = await Connection.approveConnection(connectionId, user);
+    const connection = await Connection.approveConnection(
+      connectionId,
+      user._id,
+    );
     return connection;
   }
 }

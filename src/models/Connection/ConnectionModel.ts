@@ -45,10 +45,10 @@ export class Connection extends DBSchema {
 
   static async approveConnection(
     connectionId: ObjectId,
-    user: User,
+    userId: ObjectId,
   ): Promise<ApproveConnectionReturn> {
     const connection = await ConnectionModel.getFromUserInputId(connectionId);
-    if (!connection.to.equals(user._id)) {
+    if (!connection.to.equals(userId)) {
       throw new AuthenticationError(
         'User does not own the specified connection.',
       );
@@ -68,6 +68,11 @@ export class Connection extends DBSchema {
       connection: connection.toObject(),
       reverseConnection: reverseConnection.toObject(),
     };
+  }
+
+  static async getOwnedConnections(userId: ObjectId): Promise<Connection[]> {
+    const connections = await ConnectionModel.find({ owner: userId }).lean();
+    return connections;
   }
 }
 
