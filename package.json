@@ -12,6 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "@typegoose/typegoose": "^7.6.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.10",
+    "@types/express": "^4.17.11",
+    "@types/express-session": "^1.17.3",
+    "@types/mongoose": "^5.10.5",
+    "@types/passport": "^1.0.6",
+    "@types/passport-facebook": "^2.1.10",
+    "@types/passport-google-oauth": "^1.0.41",
     "apollo-server-express": "^2.23.0",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.5",
@@ -32,14 +40,6 @@
     "type-graphql": "^1.1.1"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.2",
-    "@types/cors": "^2.8.10",
-    "@types/express": "^4.17.11",
-    "@types/express-session": "^1.17.3",
-    "@types/mongoose": "^5.10.5",
-    "@types/passport": "^1.0.6",
-    "@types/passport-facebook": "^2.1.10",
-    "@types/passport-google-oauth": "^1.0.41",
     "prettier": "^2.2.1"
   }
 }
