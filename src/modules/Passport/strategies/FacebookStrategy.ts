@@ -4,7 +4,7 @@ import {
   FACEBOOK_APP_ID,
   FACEBOOK_APP_SECRET,
   ROOT_URL,
-} from 'modules/constants';
+} from 'modules/Constants';
 import getAuthProviderVerifyFn from '../getAuthProviderVerifyFn';
 
 const FacebookStrategy = new Strategy(
