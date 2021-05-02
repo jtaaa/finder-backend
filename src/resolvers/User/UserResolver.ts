@@ -10,13 +10,14 @@ import {
 import { AuthenticationContext } from 'modules/Passport';
 import { Context } from 'modules/Apollo';
 import { User } from 'models/User';
-import { Connection } from 'models/Connection';
+import { Connection, CoordinateInput } from 'models/Connection';
 
 @Resolver((_of) => User)
 export class UserResolver {
   @FieldResolver((_type) => [Connection])
   async connections(@Ctx('user') user: User): Promise<Connection[]> {
-    return await Connection.getOwnedConnections(user._id);
+    const connections = await Connection.getOwnedConnections(user._id);
+    return connections;
   }
 
   @Query((_returns) => User, { nullable: true })
@@ -43,6 +44,20 @@ export class UserResolver {
       phoneNumber,
     });
     await context.login(user);
+    return user;
+  }
+
+  @Mutation((_returns) => User)
+  async postLocation(
+    @Ctx('user') user: User,
+    @Arg('location', (_type) => CoordinateInput) location: CoordinateInput,
+  ): Promise<User> {
+    const connections = await Connection.getOwnedConnections(user._id);
+    await Promise.all(
+      connections.map(async (connection) =>
+        connection.processLocation(user._id, location),
+      ),
+    );
     return user;
   }
 }

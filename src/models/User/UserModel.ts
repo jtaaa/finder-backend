@@ -50,7 +50,7 @@ export class User extends DBSchema {
     }
 
     const user = await UserModel.create(userInput);
-    return user.toObject();
+    return user;
   }
 
   static async search(query: string) {
@@ -58,9 +58,7 @@ export class User extends DBSchema {
 
     const usernameResults = await UserModel.find({
       userName: new RegExp(`${query}.*`),
-    })
-      .limit(USERNAME_SEARCH_RESULTS_LIMIT)
-      .lean();
+    }).limit(USERNAME_SEARCH_RESULTS_LIMIT);
 
     return usernameResults;
   }

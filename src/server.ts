@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
+import 'reflect-metadata';
 
 import { corsMiddleware, CORS_OPTIONS } from 'middleware/cors';
 import { PORT } from 'modules/Constants';

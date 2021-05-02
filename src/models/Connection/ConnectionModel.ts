@@ -6,7 +6,8 @@ import { AuthenticationError } from 'apollo-server-errors';
 import { DBSchema } from 'modules/Mongoose';
 import { User } from 'models/User';
 import { Visibility } from './enums';
-import { ApproveConnectionReturn } from './types';
+import { ApproveConnectionReturn, Coordinate } from './types';
+import { CoordinateInput } from './inputs';
 
 @ObjectType()
 export class Connection extends DBSchema {
@@ -27,6 +28,31 @@ export class Connection extends DBSchema {
   @DBProperty({ enum: Visibility, required: true })
   visibility!: Visibility;
 
+  @GraphQLField((_type) => Coordinate, { nullable: true })
+  @DBProperty()
+  lastLocation?: Coordinate;
+
+  // Private methods
+
+  private ensureIsOwner(userId: ObjectId) {
+    if (!this.owner.equals(userId)) {
+      throw new AuthenticationError(
+        'User does not own the specified connection.',
+      );
+    }
+  }
+
+  // Public methods
+
+  async processLocation(userId: ObjectId, location: CoordinateInput) {
+    this.ensureIsOwner(userId);
+    if (!this.approved) return;
+    if (this.visibility === Visibility.NotVisible) return;
+    await ConnectionModel.findByIdAndUpdate(this._id, {
+      lastLocation: location,
+    });
+  }
+
   // Static methods
 
   static async requestConnection(
@@ -40,7 +66,7 @@ export class Connection extends DBSchema {
       visibility: Visibility.VisibleWhenMoving,
     });
     await connection.save();
-    return connection.toObject();
+    return connection;
   }
 
   static async approveConnection(
@@ -48,11 +74,7 @@ export class Connection extends DBSchema {
     userId: ObjectId,
   ): Promise<ApproveConnectionReturn> {
     const connection = await ConnectionModel.getFromUserInputId(connectionId);
-    if (!connection.to.equals(userId)) {
-      throw new AuthenticationError(
-        'User does not own the specified connection.',
-      );
-    }
+    connection.ensureIsOwner(userId);
 
     connection.approved = true;
     await connection.save();
@@ -65,13 +87,13 @@ export class Connection extends DBSchema {
     });
 
     return {
-      connection: connection.toObject(),
-      reverseConnection: reverseConnection.toObject(),
+      connection: connection,
+      reverseConnection: reverseConnection,
     };
   }
 
   static async getOwnedConnections(userId: ObjectId): Promise<Connection[]> {
-    const connections = await ConnectionModel.find({ owner: userId }).lean();
+    const connections = await ConnectionModel.find({ owner: userId });
     return connections;
   }
 }
